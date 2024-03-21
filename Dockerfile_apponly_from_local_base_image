@@ -1,0 +1,16 @@
+# Note that the image base should be local on the machine
+FROM jolt-physics-service-base-jolt-only
+
+# Copy folders
+COPY ./src/app $HOME/app
+
+# cmake script
+WORKDIR $HOME/app/build/
+RUN chmod +x ./cmake_linux_clang_gcc.sh
+RUN ./cmake_linux_clang_gcc.sh Distribution
+
+# build app
+WORKDIR $HOME/app/build/Linux_Distribution
+RUN make -j 4
+
+CMD ["./JoltService"]

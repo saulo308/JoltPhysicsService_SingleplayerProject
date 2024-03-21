@@ -1,0 +1,17 @@
+# Note that the base image will be pulled from the dockerhub repository
+# If using a different repository, this must change
+FROM saulo308/jolt-physics-service-base-jolt-only:latest
+
+# Copy folders
+COPY ./src/app $HOME/app
+
+# cmake script
+WORKDIR $HOME/app/build/
+RUN chmod +x ./cmake_linux_clang_gcc.sh
+RUN ./cmake_linux_clang_gcc.sh Distribution
+
+# build app
+WORKDIR $HOME/app/build/Linux_Distribution
+RUN make -j 4
+
+CMD ["./JoltService"]

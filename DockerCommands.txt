@@ -1,0 +1,54 @@
+====
+# Build image base from zipped grpc and joltphysics files
+# Alternatively, you could make a Dockerfile that "git clone's" the grpc and joltphysics folders
+# However, there's no guarantee that it will work with newer versions
+# Another alternative is just using a pre-built base image from a remote repository (if available)
+docker build -t jolt-physics-service-base-jolt-only -f Dockerfile_imagebase . --progress=plain 
+
+# Also, we could build with the tag ready to be pushed to a repository on dockerhub
+docker build -t saulo308/jolt-physics-service-base-jolt-only:latest -f Dockerfile_imagebase . --progress=plain 
+
+=====
+# Build the app only by using a base image that contains grpc and joltphysics installed
+# note that this image must be local
+docker build -t jolt-physics-service-2 -f Dockerfile_apponly_from_local_base_image . --progress=plain 
+
+# Build the app only by using a base image that contains grpc and joltphysics installed
+# note that this image must be remote on a dockerhub repository
+docker build -t jolt-physics-service-2 -f Dockerfile_apponly_from_remote_base_image . --progress=plain 
+
+# Also, we could build with the tag ready to be pushed to a repository on dockerhub
+docker build -t saulo308/jolt-physics-service-2:latest -f Dockerfile_apponly_from_local_base_image . --progress=plain 
+
+=====
+# Running the service with a local image
+docker run -d -p 27015:27015 jolt-physics-service-2
+
+# Running the service with a image pulled from a repository
+docker run -d -p 27015:27015 --name physics-service saulo308/jolt-physics-service-2
+
+==== Debug on ubuntu virtualbox: We need to disable hypervisor to run joltphysics and grpc on the virtualbox instance
+1.Open a Command Prompt in Windows Host as Administrator.
+2.Disable Hypervisor lunch
+	bcdedit /set hypervisorlaunchtype off
+3. Disable Microsoft Hyper-V
+	DISM /Online /Disable-Feature:Microsoft-Hyper-V
+4. Shutdown quick 
+	shutdown -s -t 2
+5. Wait a few seconds before turn it on.
+
+==== Revert:
+1. bcdedit /set hypervisorlaunchtype auto
+2. DISM /Online /Enable-Feature:Microsoft-Hyper-V /All
+3. shutdown -s -t 2
+
+
+==== Pushing and pulling from docker hub
+=> Login:
+docker login
+
+=> Pushing:
+docker push saulo308/jolt-physics-service:latest
+
+=> Pulling:
+docker pull saulo308/jolt-physics-service:latest

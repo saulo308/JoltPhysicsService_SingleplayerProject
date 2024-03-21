@@ -1,0 +1,27 @@
+FROM ubuntu
+
+# Note: The zipped joltphysics folders must be on the given path
+# Copy folders to container $HOME
+COPY ./src/jolt_physics.zip $HOME
+
+# Install tools
+RUN apt-get update
+RUN apt-get -y install clang
+RUN apt-get -y install cmake
+RUN apt-get -y install git
+RUN apt install -y build-essential autoconf libtool pkg-config
+RUN apt-get install unzip
+
+# Unzip joltPhysics
+RUN unzip jolt_physics.zip
+
+# Delete zip files
+RUN rm -f jolt_physics.zip
+
+# Install JoltPhysics
+WORKDIR $HOME/jolt_physics/Build
+RUN chmod +x ./cmake_linux_clang_gcc.sh
+RUN ./cmake_linux_clang_gcc.sh Distribution
+
+WORKDIR $HOME/jolt_physics/Build/Linux_Distribution
+RUN make -j 8
